@@ -1,0 +1,56 @@
+version: "3"
+
+networks:
+  docker-network: {}
+
+services:
+
+  nginx:
+    container_name: nginx
+    build: requirements/nginx
+    image: nginx:good
+    depends_on:
+      - wordpress
+    networks:
+      - docker-network
+    ports:
+      - "443:443"
+    volumes:
+      - /home/$USER/data/wordpress_vol:/var/www/wordpress
+    restart: always
+
+  wordpress:
+    container_name: wordpress
+    build: requirements/wordpress
+    image: wordpress:good
+    depends_on:
+      - mariadb
+    networks:
+      - docker-network
+    #ports:
+      #- "9000:9000"
+    volumes:
+      - /home/$USER/data/wordpress_vol:/var/www/wordpress
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOSTNAME=${MYSQL_HOSTNAME}
+
+  mariadb:
+    container_name: mariadb
+    build: requirements/mariadb
+    image: mariadb:good
+    networks:
+      - docker-network
+    #ports:
+      #- "3306:3306"
+    volumes:
+      - /home/$USER/data/db_vol:/var/lib/mysql
+    restart: always
+    environment:
+      - MYSQL_DATABASE=${MYSQL_DATABASE}
+      - MYSQL_USER=${MYSQL_USER}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
