@@ -11,8 +11,8 @@ RUN apk update && \
 	addgroup mysql mysql && \
 	mkdir /scripts
 
+COPY conf/wordpress.sql /scripts/wordpress.sql
 COPY conf/install_db.sh /scripts/startup.sh
 RUN chmod +x /scripts/startup.sh
 
 ENTRYPOINT ["/scripts/startup.sh"]
-CMD mysqld --user=mysql --console --skip-networking=0
