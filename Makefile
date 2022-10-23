@@ -11,11 +11,11 @@ up: premake
 
 clean:
 	docker-compose -f $(COMPOSE_FILE) down
-	docker stop `docker ps -qa`
-	docker rm `docker ps -qa`
+	#docker stop `docker ps -qa`
+	#docker rm `docker ps -qa`
 	docker rmi -f `docker images -qa`
 	docker volume rm `docker volume ls -q`
-	docker network rm `docker network ls -q`
+	#docker network rm `docker network ls -q`
 
 fclean: clean
 	rm -rf /home/$(USER)/data/wordpress_vol

@@ -1,6 +1,10 @@
 FROM alpine:3.15.4
 
-EXPOSE 9000
+#EXPOSE 9000
+ARG MYSQL_DATABASE
+ARG MYSQL_USER
+ARG MYSQL_PASSWORD
+ARG MYSQL_HOSTNAME
 
 RUN apk update && \
 	apk add --no-cache php7-fpm php7-mcrypt php7-soap \

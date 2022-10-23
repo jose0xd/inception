@@ -1,8 +1,5 @@
 version: "3"
 
-networks:
-  docker-network: {}
-
 services:
 
   nginx:
@@ -16,12 +13,19 @@ services:
     ports:
       - "443:443"
     volumes:
-      - /home/$USER/data/wordpress_vol:/var/www/wordpress
+      - wordpress_vol:/var/www/wordpress
     restart: always
 
   wordpress:
     container_name: wordpress
-    build: requirements/wordpress
+    build:
+      context: ./requirements/wordpress
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_HOSTNAME=${MYSQL_HOSTNAME}
     image: wordpress:good
     depends_on:
       - mariadb
@@ -30,7 +34,7 @@ services:
     #ports:
       #- "9000:9000"
     volumes:
-      - /home/$USER/data/wordpress_vol:/var/www/wordpress
+      - wordpress_vol:/var/www/wordpress
     restart: always
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
@@ -40,17 +44,42 @@ services:
 
   mariadb:
     container_name: mariadb
-    build: requirements/mariadb
+    build:
+      context: ./requirements/mariadb
+      dockerfile: Dockerfile
+      args:
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     image: mariadb:good
     networks:
       - docker-network
     #ports:
       #- "3306:3306"
     volumes:
-      - /home/$USER/data/db_vol:/var/lib/mysql
+      - db_vol:/var/lib/mysql
     restart: always
     environment:
       - MYSQL_DATABASE=${MYSQL_DATABASE}
       - MYSQL_USER=${MYSQL_USER}
       - MYSQL_PASSWORD=${MYSQL_PASSWORD}
       - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+
+networks:
+  docker-network: {}
+
+volumes:
+  db_vol: 
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/$USER/data/db_vol
+      o: bind
+  wordpress_vol:
+    driver: local
+    driver_opts:
+      type: none
+      device: /home/$USER/data/wordpress_vol
+      o: bind
+
