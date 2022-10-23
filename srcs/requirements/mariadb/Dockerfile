@@ -15,4 +15,4 @@ COPY conf/install_db.sh /scripts/startup.sh
 RUN chmod +x /scripts/startup.sh
 
 ENTRYPOINT ["/scripts/startup.sh"]
-CMD ["mysqld", "-uroot", "--bind-address=0.0.0.0"]
+CMD mysqld --user=mysql --console --skip-networking=0
